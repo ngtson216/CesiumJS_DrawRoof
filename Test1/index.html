@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <!-- Include the CesiumJS JavaScript and CSS files -->
+    <script src="https://cesium.com/downloads/cesiumjs/releases/1.92/Build/Cesium/Cesium.js"></script>
+    <link href="https://cesium.com/downloads/cesiumjs/releases/1.92/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+</head>
+
+<body>
+    <div id="cesiumContainer"></div>
+    <script>
+        var myAjax = new XMLHttpRequest(); // Tạo đối tượng XMLHttpRequest
+        myAjax.open("GET", "squaw_creek_container_info.xml", false); //Mở file 
+        myAjax.setRequestHeader("Content-Type", "text/xml"); //Đặt header với content-type là text/xml
+        myAjax.send(null); //Gửi yêu cầu
+        var xmlDocument = myAjax.responseXML; //Lấy nội dung XML từ file và trả về biến xmlDocument
+        var po = xmlDocument.getElementsByTagName("POINT"); // Lấy các thẻ có tên là POINT
+        var li = xmlDocument.getElementsByTagName("LINE");
+
+        var txt = "";
+        //Duyệt qua danh sách các thẻ <POINT>
+        for (i = 0; i < po.length; i++) {
+            txt += "Tên thẻ: " + po[i].nodeName;
+            txt += "\n-->Thuộc tính đầu tiên của thẻ: " + po[i].attributes[0].name;
+            txt += ",\n giá trị: " + po[i].attributes[0].value;
+            // // Tìm các thẻ con của thẻ sach có tên là tieude và lấy giá trị của nó:
+            // var child1=sach[i].getElementsByTagName("tieude");
+            // txt+="\n------>Thẻ con: " + child1[0].nodeName + ", giá trị: " + child1[0].childNodes[0].nodeValue;
+            txt += "\n";
+        }
+        //alert(txt);
+
+        //Set up Cesium
+        Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyMWNlZGZiZC1hZDBkLTRlYzktOTdiMS0yZjFkN2IyZDA1MmMiLCJpZCI6ODk4NjgsImlhdCI6MTY0OTk4NjY0Nn0.YmDNYZ3GH7ahtkPAiCnRm5l5w2Quv_eMJO0IwPpYzPM';
+        const viewer = new Cesium.Viewer('cesiumContainer', {
+            terrainProvider: Cesium.createWorldTerrain()
+        });
+        const buildingTileset = viewer.scene.primitives.add(Cesium.createOsmBuildings());
+
+        //Draw Point
+        // for (i = 0; i < po.length; i++) {
+        //     drawPoint(po[i].attributes[0].value)
+        // }
+        // const ne1w = '-93.62033081054688, 42.01864242553711, 278.75982666015625';
+
+        // function drawPoint(degree) {
+        // var a;
+        // var b;
+        // var c;
+        // var p;
+        // for (var i = 0; i < degree.length; i++) {
+        //     if (degree[i] === ',') {
+        //         a = degree.slice(0, i);
+        //         p = i;
+        //         break;
+        //     }
+        // }
+        // for (var j = p + 2; j < degree.length; j++) {
+        //     if (degree[j] === ',') {
+        //         b = degree.slice(p + 2, j);
+        //         c = degree.slice(j + 2, degree.length);
+        //         break;
+        //     }
+        // }
+        //     point = viewer.entities.add({
+        //         position: Cesium.Cartesian3.fromDegrees(a, b, c),
+        //         point: {
+        //             pixelSize: 10,
+        //             color: Cesium.Color.RED,
+        //         },
+        //     });
+        //     return point;
+        // }
+
+
+        for (i = 0; i < li.length; i++) {
+            var x = li[i].attributes[1].value;
+            console.log(x);
+            var a;
+            var b;
+            var p;
+            for (var q = 0; q < x.length; q++) {
+                if (x[q] === ',') {
+                    a = x.slice(0, q);
+                    b = x.slice(q + 2, x.length);
+                    break;
+                }
+            }
+            for (j = 0; j < po.length; j++) {
+                var c;
+                var d;
+                var a1;
+                var b1;
+                var c1;
+                var p1;
+                var a2;
+                var b2;
+                var c2;
+                var p2;
+                if (po[j].attributes[1].value === a) {
+                    console.log(a);
+                    c = po[j].attributes[0].value;
+                    console.log(c);
+                    for (var i1 = 0; i1 < c.length; i1++) {
+                        if (c[i1] === ',') {
+                            a1 = c.slice(0, i1);
+                            p1 = i1;
+                            break;
+                        }
+                    }
+                    for (var j1 = p1 + 2; j1 < c.length; j1++) {
+                        if (c[j1] === ',') {
+                            b1 = c.slice(p1 + 2, j1);
+                            c1 = c.slice(j1 + 2, c.length);
+                            break;
+                        }
+                    }
+                    console.log(a1, b1, c1);
+                }
+                if (po[j].attributes[1].value === b) {
+                    console.log(b);
+                    d = po[j].attributes[0].value;
+                    console.log(d);
+                    for (var i2 = 0; i2 < d.length; i2++) {
+                        if (d[i2] === ',') {
+                            a2 = d.slice(0, i2);
+                            p2 = i2;
+                            break;
+                        }
+                    }
+                    for (var j2 = p2 + 2; j2 < d.length; j2++) {
+                        if (d[j2] === ',') {
+                            b2 = d.slice(p2 + 2, j2);
+                            c2 = d.slice(j2 + 2, d.length);
+                            break;
+                        }
+                    }
+                    console.log(a2, b2, c2);
+                }
+                // drawLine(a1, b1, c1, a2, b2, c2);
+            }
+        }
+        drawLine(-93.62052154541016, 42.01856231689453, 279.42364501953125, -93.6205062866211, 42.01852798461914, 278.27490234375)
+
+        function drawLine(a, b, c, d, e, f) {
+            const line = viewer.entities.add({
+                name: "Red line on terrain",
+                polyline: {
+                    positions: Cesium.Cartesian3.fromDegreesArrayHeights([a, b, c, d, e, f]),
+                    width: 2,
+                    material: Cesium.Color.YELLOW,
+                },
+            });
+
+            return line;
+        }
+    </script>
+    </div>
+</body>
+
+</html>
