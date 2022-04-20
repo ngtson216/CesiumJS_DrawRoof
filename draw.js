@@ -52,7 +52,7 @@ document.getElementById("drawAllPolygon").addEventListener("click", function () 
     });
     for (var i = 0; i < plg.length; i++) {
         var spl = plg[i].attributes[1].value.split(" ").join("");
-        allPolygon.add(drawAllPolygon(spl));
+        allPolygon.add(drawAllPolygon(spl, i));
     }
     viewer.zoomTo(allPolygon)
 })
@@ -76,15 +76,7 @@ document.getElementById("drawAll").addEventListener("click", function () {
     viewer.zoomTo(allEtt);
 })
 
-viewer.selectedEntityChanged.addEventListener(function (selectedEntity) {
-    if (Cesium.defined(selectedEntity)) {
-        if (selectedEntity.name === 'Polygon') {
-            colors = Cesium.Color.GREEN.withAlpha(0.5);
-        } else {
-            colors = Cesium.Color.RED.withAlpha(0.5);
-        }
-    }
-});
+
 
 function getPoDegree(arrOfLine) {
     var arrOfPo = [];
@@ -218,16 +210,31 @@ function drawLine(a, b, c, d, e, f) {
     return line;
 }
 
-var colors = new Cesium.Color(1, 0, 0, 1);
-
+var colors = new Cesium.Color(1, 0, 0, 0.5);
 function drawPolygon(arrPoDg) {
-    var colorProperty = new Cesium.ColorMaterialProperty();
+    var colorProperty;
+    viewer.selectedEntityChanged.addEventListener(function (selectedEntity) {
+        if (Cesium.defined(selectedEntity)) {
+            if (selectedEntity.name === 'Polygon') {
+                selectedEntity.polygon.material.color.setCallback(function () {
+                    return Cesium.Color.GREEN.withAlpha(0.5);
+                }, false)
+            }
+            else {
+                colorProperty.color.setCallback(function () {
+                    return Cesium.Color.RED.withAlpha(0.5);
+                }, false)
+            }
+        }
+    });
+    document.getElementById("colorCh").addEventListener("click", function () {
+        colorProperty.color.setCallback(function () {
+            return Cesium.Color.PURPLE.withAlpha(0.5);
+        }, false)
+    });
+    colorProperty = new Cesium.ColorMaterialProperty();
     colorProperty.color = colors;
     colorProperty.color = new Cesium.CallbackProperty(function () {
-        document.getElementById("colorCh").addEventListener("click", function () {
-            colors = Cesium.Color.PURPLE.withAlpha(0.5);
-        })
-        colors.alpha = 0.5;
         return colors;
     }, false);
     const polygon = viewer.entities.add({
