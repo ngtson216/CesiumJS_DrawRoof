@@ -211,16 +211,29 @@ function drawLine(a, b, c, d, e, f) {
 }
 
 var colors = new Cesium.Color(1, 0, 0, 0.5);
-function drawPolygon(arrPoDg) {
-    var colorProperty;
-    viewer.selectedEntityChanged.addEventListener(function (selectedEntity) {
-        if (Cesium.defined(selectedEntity)) {
-            if (selectedEntity.name === 'Polygon') {
+viewer.selectedEntityChanged.addEventListener(function (selectedEntity) {
+    if (Cesium.defined(selectedEntity)) {
+        if (selectedEntity.name === 'Polygon') {
+            console.log(selectedEntity.polygon.material.color.getValue())
+            if (!Cesium.Color.equals(selectedEntity.polygon.material.color.getValue(), Cesium.Color.RED.withAlpha(0.5))) {
+                selectedEntity.polygon.material.color.setCallback(function () {
+                    return Cesium.Color.RED.withAlpha(0.5);
+                }, false)
+            }
+            else if (!Cesium.Color.equals(selectedEntity.polygon.material.color.getValue(), Cesium.Color.GREEN.withAlpha(0.5))) {
                 selectedEntity.polygon.material.color.setCallback(function () {
                     return Cesium.Color.GREEN.withAlpha(0.5);
                 }, false)
             }
-            else {
+        }
+    }
+});
+
+function drawPolygon(arrPoDg) {
+    var colorProperty;
+    viewer.selectedEntityChanged.addEventListener(function (selectedEntity) {
+        if (Cesium.defined(selectedEntity)) {
+            if (selectedEntity.name !== 'Polygon') {
                 colorProperty.color.setCallback(function () {
                     return Cesium.Color.RED.withAlpha(0.5);
                 }, false)
