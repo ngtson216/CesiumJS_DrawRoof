@@ -15,16 +15,6 @@ const viewer = new Cesium.Viewer('cesiumContainer', {
 });
 const buildingTileset = viewer.scene.primitives.add(Cesium.createOsmBuildings());
 
-function CflyTo() {
-    viewer.camera.flyTo({
-        destination: Cesium.Cartesian3.fromDegrees(-93.62033081054688, 42.01864242553711, 500),
-        orientation: {
-            heading: Cesium.Math.toRadians(0.0),
-            pitch: Cesium.Math.toRadians(-90, 0),
-        }
-    });
-}
-
 document.getElementById("clearEntities").addEventListener("click", function () {
     viewer.entities.removeAll();
     viewer.camera.flyHome(10);
@@ -33,46 +23,68 @@ document.getElementById("clearEntities").addEventListener("click", function () {
 //Draw All Point
 document.getElementById("drawAllPoint").addEventListener("click", function () {
     viewer.entities.removeAll();
-    CflyTo();
+    var allPoint = new Cesium.EntityCollection({
+        id: 'allPo',
+    });
     for (i = 0; i < po.length; i++) {
-        drawAllPoint(po[i].attributes[0].value)
+        allPoint.add(drawAllPoint(po[i].attributes[0].value));
     }
+    viewer.zoomTo(allPoint)
 })
 
 //Draw All Line
 document.getElementById("drawAllLine").addEventListener("click", function () {
     viewer.entities.removeAll();
-    CflyTo();
+    var allLine = new Cesium.EntityCollection({
+        id: 'allLn',
+    });
     for (var i = 0; i < li.length; i++) {
-        drawAllLine(li[i].attributes[1].value);
+        allLine.add(drawAllLine(li[i].attributes[1].value));
     }
+    viewer.zoomTo(allLine)
 })
 
 //Draw All Polygon
 document.getElementById("drawAllPolygon").addEventListener("click", function () {
     viewer.entities.removeAll();
-    CflyTo();
+    var allPolygon = new Cesium.EntityCollection({
+        id: 'allPlg',
+    });
     for (var i = 0; i < plg.length; i++) {
         var spl = plg[i].attributes[1].value.split(" ").join("");
-        drawAllPolygon(spl);
+        allPolygon.add(drawAllPolygon(spl));
     }
+    viewer.zoomTo(allPolygon)
 })
 
 //Draw All Entities
 document.getElementById("drawAll").addEventListener("click", function () {
     viewer.entities.removeAll();
-    CflyTo();
+    var allEtt = new Cesium.EntityCollection({
+        id: 'allEtt',
+    });
     for (i = 0; i < po.length; i++) {
-        drawAllPoint(po[i].attributes[0].value)
+        allEtt.add(drawAllPoint(po[i].attributes[0].value));
     }
     for (var i = 0; i < li.length; i++) {
-        drawAllLine(li[i].attributes[1].value);
+        allEtt.add(drawAllLine(li[i].attributes[1].value));
     }
     for (var i = 0; i < plg.length; i++) {
         var spl = plg[i].attributes[1].value.split(" ").join("");
-        drawAllPolygon(spl);
+        allEtt.add(drawAllPolygon(spl));
     }
+    viewer.zoomTo(allEtt);
 })
+
+viewer.selectedEntityChanged.addEventListener(function (selectedEntity) {
+    if (Cesium.defined(selectedEntity)) {
+        if (selectedEntity.name === 'Polygon') {
+            colors = Cesium.Color.GREEN.withAlpha(0.5);
+        } else {
+            colors = Cesium.Color.RED.withAlpha(0.5);
+        }
+    }
+});
 
 function getPoDegree(arrOfLine) {
     var arrOfPo = [];
@@ -169,14 +181,14 @@ function takeDegreeFromLine(linePath) {
 
 function drawAllPoint(degree) {
     var takeDegree = sliceDegree(degree);
-    drawPoint(takeDegree.longitude, takeDegree.latitude, takeDegree.height)
+    return drawPoint(takeDegree.longitude, takeDegree.latitude, takeDegree.height)
 }
 
 function drawPoint(a, b, c) {
     const point = viewer.entities.add({
         name: 'Point',
         description: '<p>\
-            Point from degree: </p>\ ' +
+    Point from degree: </p>\ ' +
             'Longitude: ' + a +
             '</br>\ Latitude: ' + b +
             '</br>\ Latitude: ' + c,
@@ -191,7 +203,7 @@ function drawPoint(a, b, c) {
 
 function drawAllLine(linePath) {
     var sD = takeDegreeFromLine(linePath);
-    drawLine(sD.slDr1.longitude, sD.slDr1.latitude, sD.slDr1.height, sD.slDr2.longitude, sD.slDr2.latitude, sD.slDr2.height);
+    return drawLine(sD.slDr1.longitude, sD.slDr1.latitude, sD.slDr1.height, sD.slDr2.longitude, sD.slDr2.latitude, sD.slDr2.height);
 }
 
 function drawLine(a, b, c, d, e, f) {
@@ -206,15 +218,31 @@ function drawLine(a, b, c, d, e, f) {
     return line;
 }
 
+var colors = new Cesium.Color(1, 0, 0, 1);
+
 function drawPolygon(arrPoDg) {
-    const redPolygon = viewer.entities.add({
+    var colorProperty = new Cesium.ColorMaterialProperty();
+    colorProperty.color = colors;
+    colorProperty.color = new Cesium.CallbackProperty(function () {
+        document.getElementById("colorCh").addEventListener("click", function () {
+            colors = Cesium.Color.PURPLE.withAlpha(0.5);
+        })
+        colors.alpha = 0.5;
+        return colors;
+    }, false);
+    const polygon = viewer.entities.add({
         name: "Polygon",
+        description: '<p>\If you select another entity, this polygon will change back to red color </p>\ ',
         polygon: {
             hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights(arrPoDg),
             perPositionHeight: true,
-            material: Cesium.Color.PURPLE,
+            material: colorProperty,
+            outline: true,
+            outlineColor: Cesium.Color.BLACK,
         },
+
     });
+    return polygon
 }
 
 function drawAllPolygon(value) {
@@ -229,5 +257,5 @@ function drawAllPolygon(value) {
             +arrPoDegree[j].slDr2.latitude,
             +arrPoDegree[j].slDr2.height);
     }
-    drawPolygon(arrPoDg);
+    return drawPolygon(arrPoDg);
 }
