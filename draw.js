@@ -7,6 +7,7 @@ var po = xmlDocument.getElementsByTagName("POINT"); // Lấy các thẻ có tên
 var li = xmlDocument.getElementsByTagName("LINE");
 var plg = xmlDocument.getElementsByTagName("POLYGON");
 
+
 //Set up Cesium
 Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyMWNlZGZiZC1hZDBkLTRlYzktOTdiMS0yZjFkN2IyZDA1MmMiLCJpZCI6ODk4NjgsImlhdCI6MTY0OTk4NjY0Nn0.YmDNYZ3GH7ahtkPAiCnRm5l5w2Quv_eMJO0IwPpYzPM';
 const viewer = new Cesium.Viewer('cesiumContainer', {
@@ -14,29 +15,64 @@ const viewer = new Cesium.Viewer('cesiumContainer', {
 });
 const buildingTileset = viewer.scene.primitives.add(Cesium.createOsmBuildings());
 
-viewer.camera.flyTo({
-    destination: Cesium.Cartesian3.fromDegrees(-93.62033081054688, 42.01864242553711, 500),
-    orientation: {
-        heading: Cesium.Math.toRadians(0.0),
-        pitch: Cesium.Math.toRadians(-90, 0),
-    }
-});
+function CflyTo() {
+    viewer.camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(-93.62033081054688, 42.01864242553711, 500),
+        orientation: {
+            heading: Cesium.Math.toRadians(0.0),
+            pitch: Cesium.Math.toRadians(-90, 0),
+        }
+    });
+}
+
+document.getElementById("clearEntities").addEventListener("click", function () {
+    viewer.entities.removeAll();
+    viewer.camera.flyHome(10);
+})
 
 //Draw All Point
-for (i = 0; i < po.length; i++) {
-    drawAllPoint(po[i].attributes[0].value)
-}
+document.getElementById("drawAllPoint").addEventListener("click", function () {
+    viewer.entities.removeAll();
+    CflyTo();
+    for (i = 0; i < po.length; i++) {
+        drawAllPoint(po[i].attributes[0].value)
+    }
+})
 
 //Draw All Line
-for (var i = 0; i < li.length; i++) {
-    drawAllLine(li[i].attributes[1].value);
-}
+document.getElementById("drawAllLine").addEventListener("click", function () {
+    viewer.entities.removeAll();
+    CflyTo();
+    for (var i = 0; i < li.length; i++) {
+        drawAllLine(li[i].attributes[1].value);
+    }
+})
 
 //Draw All Polygon
-for (var i = 0; i < plg.length; i++) {
-    var spl = plg[i].attributes[1].value.split(" ").join("");
-    drawAllPolygon(spl);
-}
+document.getElementById("drawAllPolygon").addEventListener("click", function () {
+    viewer.entities.removeAll();
+    CflyTo();
+    for (var i = 0; i < plg.length; i++) {
+        var spl = plg[i].attributes[1].value.split(" ").join("");
+        drawAllPolygon(spl);
+    }
+})
+
+//Draw All Entities
+document.getElementById("drawAll").addEventListener("click", function () {
+    viewer.entities.removeAll();
+    CflyTo();
+    for (i = 0; i < po.length; i++) {
+        drawAllPoint(po[i].attributes[0].value)
+    }
+    for (var i = 0; i < li.length; i++) {
+        drawAllLine(li[i].attributes[1].value);
+    }
+    for (var i = 0; i < plg.length; i++) {
+        var spl = plg[i].attributes[1].value.split(" ").join("");
+        drawAllPolygon(spl);
+    }
+})
 
 function getPoDegree(arrOfLine) {
     var arrOfPo = [];
