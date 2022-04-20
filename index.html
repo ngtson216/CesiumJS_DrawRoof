@@ -5,12 +5,19 @@
     <meta charset="utf-8">
     <!-- Include the CesiumJS JavaScript and CSS files -->
     <script src="https://cesium.com/downloads/cesiumjs/releases/1.92/Build/Cesium/Cesium.js"></script>
-
     <link href="https://cesium.com/downloads/cesiumjs/releases/1.92/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
 </head>
 
 <body>
     <div id="cesiumContainer"></div>
+    <div style="position: absolute; top: 10px; left: 10px; color: white">
+        <p style="margin: 0">PRESS BUTTON TO CHOOSE YOUR CHOICE</p>
+        <button id="clearEntities" type="button">Clear</button>
+        <button id="drawAllPoint" type="button">Draw All Point</button>
+        <button id="drawAllLine" type="button">Draw All Line</button>
+        <button id="drawAllPolygon" type="button">Draw All Polygon</button>
+        <button id="drawAll" type="button">Draw All Entities</button>
+    </div>
     <script src="draw.js"></script>
     </div>
 </body>
