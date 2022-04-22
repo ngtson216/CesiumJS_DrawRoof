@@ -230,6 +230,11 @@ viewer.selectedEntityChanged.addEventListener(function (selectedEntity) {
 
 function drawPolygon(arrPoDg) {
     var colorProperty;
+    colorProperty = new Cesium.ColorMaterialProperty();
+    colorProperty.color = colors;
+    colorProperty.color = new Cesium.CallbackProperty(function () {
+        return colors;
+    }, false);
     viewer.selectedEntityChanged.addEventListener(function (selectedEntity) {
         if (Cesium.defined(selectedEntity)) {
             if (selectedEntity.name !== 'Polygon') {
@@ -244,11 +249,6 @@ function drawPolygon(arrPoDg) {
             return Cesium.Color.PURPLE.withAlpha(0.5);
         }, false)
     });
-    colorProperty = new Cesium.ColorMaterialProperty();
-    colorProperty.color = colors;
-    colorProperty.color = new Cesium.CallbackProperty(function () {
-        return colors;
-    }, false);
     const polygon = viewer.entities.add({
         name: "Polygon",
         description: '<p>\If you select another entity, this polygon will change back to red color </p>\ ',
