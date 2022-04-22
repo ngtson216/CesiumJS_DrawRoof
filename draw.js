@@ -1,9 +1,9 @@
-var myAjax = new XMLHttpRequest(); // Tạo đối tượng XMLHttpRequest
-myAjax.open("GET", "squaw_creek_container_info.xml", false); //Mở file 
-myAjax.setRequestHeader("Content-Type", "text/xml"); //Đặt header với content-type là text/xml
-myAjax.send(null); //Gửi yêu cầu
-var xmlDocument = myAjax.responseXML; //Lấy nội dung XML từ file và trả về biến xmlDocument
-var po = xmlDocument.getElementsByTagName("POINT"); // Lấy các thẻ có tên là POINT
+var myAjax = new XMLHttpRequest(); 
+myAjax.open("GET", "squaw_creek_container_info.xml", false); 
+myAjax.setRequestHeader("Content-Type", "text/xml"); 
+myAjax.send(null); 
+var xmlDocument = myAjax.responseXML; 
+var po = xmlDocument.getElementsByTagName("POINT"); 
 var li = xmlDocument.getElementsByTagName("LINE");
 var plg = xmlDocument.getElementsByTagName("POLYGON");
 
@@ -63,7 +63,7 @@ document.getElementById("drawAll").addEventListener("click", function () {
     var allEtt = new Cesium.EntityCollection({
         id: 'allEtt',
     });
-    for (i = 0; i < po.length; i++) {
+    for (var i = 0; i < po.length; i++) {
         allEtt.add(drawAllPoint(po[i].attributes[0].value));
     }
     for (var i = 0; i < li.length; i++) {
@@ -214,7 +214,6 @@ var colors = new Cesium.Color(1, 0, 0, 0.5);
 viewer.selectedEntityChanged.addEventListener(function (selectedEntity) {
     if (Cesium.defined(selectedEntity)) {
         if (selectedEntity.name === 'Polygon') {
-            console.log(selectedEntity.polygon.material.color.getValue())
             if (!Cesium.Color.equals(selectedEntity.polygon.material.color.getValue(), Cesium.Color.RED.withAlpha(0.5))) {
                 selectedEntity.polygon.material.color.setCallback(function () {
                     return Cesium.Color.RED.withAlpha(0.5);
